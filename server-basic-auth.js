@@ -1,6 +1,7 @@
 // Load modules
 var http = require('http');
 var auth = require('http-auth');
+var crypto = require('crypto');
 
 // Grab the config file
 var config;
@@ -26,8 +27,9 @@ function getBasicAuthData(req){
       auth    = new Buffer(token, 'base64').toString(),    // convert from base64
       parts   = auth.split(/:/),                          // split on colon
       data    = {};
-  data['username'] = parts[0];
-  data['password'] = parts[1];
+  data.username = parts[0];
+  data.password = parts[1];
+  data.hash = crypto.createHash('sha256').update(data.username+data.password).digest('hex');
   return data;
 }
 
@@ -37,7 +39,7 @@ http
     var data = getBasicAuthData(req);
 
     res.writeHead(200,{'Content-Type':'text/plain'});
-    res.end('username is "' + data.username + '" and password is "' + data.password + '"');
+    res.end('username: "' + data.username + '", password: "' + data.password + '", SHA256 Hash: "' + data.hash + '"');
   })
   .listen(port, function () {
     console.log('SAP HANA Cloud Tial Authentication Proxy for HANA XS Services ready: http://localhost:' + port);
