@@ -39,13 +39,14 @@ function getBasicAuthData(req){
 }
 
 function request(req, proxyres, cookie){
+  // console.log(req.headers);
   headers = {
     'Cookie': cookie
   };
-  if(req.headers['Accept'] != undefined) {
-    headers['Accept'] = req.headers['Accept'];
+  if(req.headers['accept'] != undefined) {
+    headers['Accept'] = req.headers['accept'];
   }
-  console.log(headers);      
+  // console.log(headers);
   options = {
     host: host,
     port: '443',
