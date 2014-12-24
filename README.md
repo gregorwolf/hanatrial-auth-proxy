@@ -8,6 +8,15 @@ Concept
 
 Provide a HTTP proxy that offers basic authentication to it's clients. The basic authentication information is taken and used to do a SAML authentication against the SAP ID Service. After a sucessful authentication the session cookies are cached in comination with the basic authentication information. The cache avoids a re-authentication for further requests.
 
+Setup
+-----
+
+* Install node.js from http://nodejs.org/
+* Install the node.js modules http-auth, cheerio and querystring using npm install
+* Clone this repository
+* Start the proxy server using 'node server-basic-auth.js'
+* Install the SAP Cloud Connector and configure to secure the connection from the HANA Cloud Platform to you local proxy server
+
 Status
 ------
 
