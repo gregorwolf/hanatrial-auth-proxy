@@ -38,10 +38,14 @@ function getBasicAuthData(req){
   return authData;
 }
 
-function request(req, cookie, callback){
+function request(req, proxyres, cookie){
   headers = {
     'Cookie': cookie
   };
+  if(req.headers['Accept'] != undefined) {
+    headers['Accept'] = req.headers['Accept'];
+  }
+  console.log(headers);      
   options = {
     host: host,
     port: '443',
@@ -55,11 +59,16 @@ function request(req, cookie, callback){
       body += chunk;
     });
     res.on('end', function() {
-      callback(body);
+      // console.log(res.headers['content-type']);      
+      proxyres.setHeader("Content-Type",  res.headers['content-type']);
+      if(res.headers['expires'] != '') { 
+        proxyres.setHeader("expires",  res.headers['expires']);
+      }
+      proxyres.statusCode = res.statusCode;
+      proxyres.end(body);
     });
   });
   req.end();
-  
 }
 
 // Creating new HTTP server.
@@ -78,14 +87,10 @@ http
         // console.log(cookie);
         sessionCache[authData.hash] = cookie;
         // res.end(sessionCache[authData.hash]);
-        request(req, sessionCache[authData.hash], function(resData){
-          res.end(resData);
-        });
+        request(req, res, sessionCache[authData.hash]);
       });
     } else {
-      request(req, sessionCache[authData.hash], function(resData){
-        res.end(resData);
-      });
+      request(req, res, sessionCache[authData.hash]);
     }
   })
   .listen(port, function () {
