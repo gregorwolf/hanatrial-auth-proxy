@@ -46,6 +46,9 @@ function request(req, proxyres, cookie){
   if(req.headers['accept'] != undefined) {
     headers['Accept'] = req.headers['accept'];
   }
+  if(req.headers['content-type'] != undefined) {
+    headers['Content-Type'] = req.headers['content-type'];
+  }
   // console.log(headers);
   options = {
     host: host,
@@ -54,7 +57,7 @@ function request(req, proxyres, cookie){
     method: req.method,
     headers: headers
   };
-  var req = https.request(options, function(res) {
+  var proxyreq = https.request(options, function(res) {
     var body = '';
     res.on('data', function(chunk) {
       body += chunk;
@@ -69,12 +72,24 @@ function request(req, proxyres, cookie){
       proxyres.end(body);
     });
   });
-  req.end();
+  if(req.method == 'POST'){
+    var body = '';
+    req.on('data', function (data) {
+        body += data;
+        // Too much POST data, kill the connection!
+        if (body.length > 1e6)
+            req.connection.destroy();
+    });
+    req.on('end', function () {});
+    // console.log(body);
+    proxyreq.write(body);
+  }
+  proxyreq.end();
 }
 
 // Creating new HTTP server.
 http
-  .createServer(basic, function(req, res) {    
+  .createServer(basic, function(req, res) {
     console.log(req.method + " " + req.url);
     var authData = getBasicAuthData(req);
     var samlAuthData = {};
