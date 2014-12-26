@@ -38,53 +38,55 @@ function getBasicAuthData(req){
   return authData;
 }
 
-function request(req, proxyres, cookie){
-  // console.log(req.headers);
+function request(proxyreq, proxyres, cookie){
+  // console.log(proxyreq.headers);
   headers = {
     'Cookie': cookie
   };
-  if(req.headers['accept'] != undefined) {
-    headers['Accept'] = req.headers['accept'];
+  if(proxyreq.headers['accept'] != undefined) {
+    headers['Accept'] = proxyreq.headers['accept'];
   }
-  if(req.headers['content-type'] != undefined) {
-    headers['Content-Type'] = req.headers['content-type'];
+  if(proxyreq.headers['content-type'] != undefined) {
+    headers['Content-Type'] = proxyreq.headers['content-type'];
   }
   // console.log(headers);
   options = {
     host: host,
     port: '443',
-    path: req.url,
-    method: req.method,
+    path: proxyreq.url,
+    method: proxyreq.method,
     headers: headers
   };
-  var proxyreq = https.request(options, function(res) {
-    var body = '';
-    res.on('data', function(chunk) {
-      body += chunk;
-    });
-    res.on('end', function() {
-      // console.log(res.headers['content-type']);      
-      proxyres.setHeader("Content-Type",  res.headers['content-type']);
-      if(res.headers['expires'] != '') { 
-        proxyres.setHeader("expires",  res.headers['expires']);
-      }
-      proxyres.statusCode = res.statusCode;
-      proxyres.end(body);
-    });
+  
+  var body = '';
+  proxyreq.on('data', function (data) {
+      body += data;
+      // Too much POST data, kill the connection!
+      if (body.length > 1e6)
+          proxyreq.connection.destroy();
   });
-  if(req.method == 'POST'){
-    var body = '';
-    req.on('data', function (data) {
-        body += data;
-        // Too much POST data, kill the connection!
-        if (body.length > 1e6)
-            req.connection.destroy();
+  proxyreq.on('end', function () {
+    // console.log('Original Request body: ' + body);    
+    var req = https.request(options, function(res) {
+      var body = '';
+      res.on('data', function(chunk) {
+        body += chunk;
+      });
+      res.on('end', function() {
+        // console.log('Proxy Response body: ' + body);      
+        proxyres.setHeader("Content-Type",  res.headers['content-type']);
+        if(res.headers['expires'] != '') { 
+          proxyres.setHeader("expires",  res.headers['expires']);
+        }
+        proxyres.statusCode = res.statusCode;
+        proxyres.end(body);
+      });
     });
-    req.on('end', function () {});
-    // console.log(body);
-    proxyreq.write(body);
-  }
-  proxyreq.end();
+    if(proxyreq.method == 'POST' || proxyreq.method == 'PUT'){      
+      req.write(body);
+    }
+    req.end();
+  });  
 }
 
 // Creating new HTTP server.
