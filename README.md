@@ -20,6 +20,7 @@ Setup
 Status
 ------
 
+2014-12-26: Support for HTTP GET, POST, PUT and DELETE. Tested with an SAPUI5 CRUD Applicaiton.
 2014-12-23: There is a first working version!
 
 ### hana-saml.js
@@ -40,4 +41,3 @@ TODO
 ----
 
 * Error handling when username / password is incorrect
-* Support for HTTP POST, PUT and DELETE
