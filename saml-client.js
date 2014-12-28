@@ -12,6 +12,14 @@ try {
 
 var args = process.argv.slice(2);
 var authOptions = {};
+if(process.argv[2] === undefined) {
+  console.error("No username provided.");
+  process.exit(1);
+}
+if(process.argv[3] === undefined) {
+  console.error("No password provided.");
+  process.exit(1);
+}
 authOptions['username'] = process.argv[2];
 authOptions['password'] = process.argv[3];
 

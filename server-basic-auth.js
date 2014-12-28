@@ -17,13 +17,6 @@ try {
 var port = config.port || 7891;
 var host = config.host || 's6hanaxs.hanatrial.ondemand.com';
 
-var basic = auth.basic({
-        realm: "SAP ID Service Account"
-    }, function (username, password, callback) { // Custom authentication method.
-        callback(true);
-    }
-);
-
 var sessionCache = {};
 
 function getBasicAuthData(req){
@@ -89,6 +82,13 @@ function request(proxyreq, proxyres, cookie){
   });  
 }
 
+var basic = auth.basic({
+        realm: "SAP ID Service Account"
+    }, function (username, password, callback) { // Custom authentication method.
+        callback(true);
+    }
+);
+
 // Creating new HTTP server.
 http
   .createServer(basic, function(req, res) {
@@ -103,9 +103,13 @@ http
     if(sessionCache[authData.hash] === undefined){
       hanaSaml.authenticate(samlAuthData, function(cookie){
         // console.log(cookie);
-        sessionCache[authData.hash] = cookie;
-        // res.end(sessionCache[authData.hash]);
-        request(req, res, sessionCache[authData.hash]);
+        if(cookie === undefined){
+          res.end('Authentication failed.');
+        } else {
+          sessionCache[authData.hash] = cookie;
+          // res.end(sessionCache[authData.hash]);
+          request(req, res, sessionCache[authData.hash]);
+        }
       });
     } else {
       request(req, res, sessionCache[authData.hash]);
