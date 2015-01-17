@@ -16,6 +16,10 @@ try {
 
 var port = config.port || 7891;
 var host = config.host || 's6hanaxs.hanatrial.ondemand.com';
+var timeout = config.timeout || 1800;
+var timestampTimeout;
+// Calculate timeout in miliseconds
+timeout = timeout * 1000;
 
 var sessionCache = {};
 
@@ -99,20 +103,31 @@ http
     samlAuthData.path = req.url;
     samlAuthData.username = authData.username;
     samlAuthData.password = authData.password;
-  
-    if(sessionCache[authData.hash] === undefined){
+    timestampTimeout = Date.now() - timeout;
+    /*
+    if(sessionCache[authData.hash] !== undefined ) {
+      console.log('Timestamp: ' + sessionCache[authData.hash].timestamp);
+      console.log('TimestampTimeout: ' + timestampTimeout);
+    }
+    */
+    if(sessionCache[authData.hash] === undefined 
+       || sessionCache[authData.hash].timestamp <= timestampTimeout){
+      console.log('Get new session cookie');
       hanaSaml.authenticate(samlAuthData, function(cookie){
         // console.log(cookie);
         if(cookie === undefined){
           res.end('Authentication failed.');
         } else {
-          sessionCache[authData.hash] = cookie;
+          sessionCache[authData.hash] = { 
+              cookie: cookie,
+              timestamp: Date.now()
+          };
           // res.end(sessionCache[authData.hash]);
-          request(req, res, sessionCache[authData.hash]);
+          request(req, res, sessionCache[authData.hash].cookie);
         }
       });
     } else {
-      request(req, res, sessionCache[authData.hash]);
+      request(req, res, sessionCache[authData.hash].cookie);
     }
   })
   .listen(port, function () {
