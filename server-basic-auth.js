@@ -1,6 +1,7 @@
 // Load modules
 var http = require('http');
 var https = require('https');
+var fs = require('fs');
 var auth = require('http-auth');
 var crypto = require('crypto');
 var hanaSaml = require('./hana-saml');
@@ -16,6 +17,15 @@ try {
 
 var port = config.port || 7891;
 var host = config.host || 's6hanaxs.hanatrial.ondemand.com';
+var httpsServer = config.https || false;
+var httpsOptions = {};
+if(httpsServer) {
+  httpsOptions = {
+    key: fs.readFileSync(config.key),
+    cert: fs.readFileSync(config.cert)
+  };
+}
+
 var timeout = config.timeout || 1800;
 var timestampTimeout;
 // Calculate timeout in miliseconds
@@ -86,16 +96,16 @@ function request(proxyreq, proxyres, cookie){
   });  
 }
 
-var basic = auth.basic({
-        realm: "SAP ID Service Account"
-    }, function (username, password, callback) { // Custom authentication method.
-        callback(true);
-    }
-);
+var proxy = function (req, res) {
+  var auth = req.headers['authorization']; // auth is in base64(username:password) so we need to decode the base64
 
-// Creating new HTTP server.
-http
-  .createServer(basic, function(req, res) {
+  if(!auth) { 
+    res.statusCode = 401;
+    res.setHeader('WWW-Authenticate', 'Basic realm="SAP ID Service Account"');
+    res.end('<html><body>Provide your SAP ID Service Account username and password</body></html>');
+  }
+
+  else if(auth) { // The Authorization was passed in so now we validate it  
     console.log(req.method + " " + req.url);
     var authData = getBasicAuthData(req);
     var samlAuthData = {};
@@ -104,12 +114,7 @@ http
     samlAuthData.username = authData.username;
     samlAuthData.password = authData.password;
     timestampTimeout = Date.now() - timeout;
-    /*
-    if(sessionCache[authData.hash] !== undefined ) {
-      console.log('Timestamp: ' + sessionCache[authData.hash].timestamp);
-      console.log('TimestampTimeout: ' + timestampTimeout);
-    }
-    */
+
     if(sessionCache[authData.hash] === undefined 
        || sessionCache[authData.hash].timestamp <= timestampTimeout){
       console.log('Get new session cookie');
@@ -129,7 +134,21 @@ http
     } else {
       request(req, res, sessionCache[authData.hash].cookie);
     }
-  })
-  .listen(port, function () {
-    console.log('SAP HANA Cloud Tial Authentication Proxy for HANA XS Services ready: http://localhost:' + port);
-  });
+  }
+}
+
+
+// Creating new HTTP server.
+if(httpsServer) {
+  https
+    .createServer(httpsOptions, proxy)
+    .listen(port, function () {
+      console.log('SAP HANA Cloud Tial Authentication Proxy for HANA XS Services ready: https://localhost:' + port);
+    });
+} else {
+  http
+    .createServer(proxy)
+    .listen(port, function () {
+      console.log('SAP HANA Cloud Tial Authentication Proxy for HANA XS Services ready: http://localhost:' + port);
+    });  
+}
