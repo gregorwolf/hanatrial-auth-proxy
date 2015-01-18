@@ -16,7 +16,7 @@ Setup
 * Clone this repository
 * Start the proxy server using 'node server-basic-auth.js'
 * Install the SAP Cloud Connector and configure to secure the connection from the HANA Cloud Platform to you local proxy server
-* or you use the new HTTPS support and generate a key with 'openssl genrsa -out proxy.pem 2048', a certificate signing request (CSR) with 'openssl req -new -key proxy.pem -out proxy.csr' and then let the sign by the free http://www.cacert.org/ until https://letsencrypt.org/ is available
+* or you use the new HTTPS support and generate a key with 'openssl genrsa -out proxy-key.pem 2048', a certificate signing request (CSR) with 'openssl req -new -key proxy-key.pem -out proxy-csr.pem' and then let the sign by the free http://www.cacert.org/ until https://letsencrypt.org/ is available
 
 Status
 ------
