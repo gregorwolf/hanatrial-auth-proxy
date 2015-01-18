@@ -2,7 +2,6 @@
 var http = require('http');
 var https = require('https');
 var fs = require('fs');
-var auth = require('http-auth');
 var crypto = require('crypto');
 var hanaSaml = require('./hana-saml');
 
