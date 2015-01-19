@@ -91,6 +91,9 @@ function request(proxyreq, proxyres, cookie){
     if(proxyreq.method == 'POST' || proxyreq.method == 'PUT'){      
       req.write(body);
     }
+    req.on('error', function(e) {
+      console.log('problem with request: ' + e.message);
+    });
     req.end();
   });  
 }

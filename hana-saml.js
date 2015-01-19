@@ -14,7 +14,7 @@ exports.authenticate = function (authOptions, callback) {
   var cookieHana;
 
   // Request the XSOData Service
-  var req = https.request(options, function(res) {    
+  var req = https.request(options, function(res) {
     res.on('data', function(d) {
     });
     var location = res.headers.location;
@@ -152,18 +152,30 @@ exports.authenticate = function (authOptions, callback) {
                     });
                   });
                   post_req2.write(postData);
+                  post_req2.on('error', function(e) {
+                    console.log('problem with request: ' + e.message);
+                  });
                   post_req2.end();
                 }
               });
             });
             // post the data
             post_req.write(postData);
+            post_req.on('error', function(e) {
+              console.log('problem with request: ' + e.message);
+            });
             post_req.end();
           });
+        });
+        req2.on('error', function(e) {
+          console.log('problem with request: ' + e.message);
         });
         req2.end();
       }
     });
+  });
+  req.on('error', function(e) {
+    console.log('problem with request: ' + e.message);
   });
   req.end();
 }
