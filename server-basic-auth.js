@@ -4,6 +4,7 @@ var https = require('https');
 var fs = require('fs');
 var crypto = require('crypto');
 var hanaSaml = require('./hana-saml');
+var request = require('request');
 
 // Grab the config file
 var config;
@@ -17,6 +18,7 @@ try {
 var port = config.port || 7891;
 var host = config.host || 's6hanaxs.hanatrial.ondemand.com';
 var httpsServer = config.https || false;
+var proxyServer = config.proxy || '';
 var httpsOptions = {};
 if(httpsServer) {
   httpsOptions = {
@@ -44,7 +46,7 @@ function getBasicAuthData(req){
   return authData;
 }
 
-function request(proxyreq, proxyres, cookie){
+function proxyRequest(proxyreq, proxyres, cookie){
   // console.log(proxyreq.headers);
   headers = {
     'Cookie': cookie
@@ -56,14 +58,13 @@ function request(proxyreq, proxyres, cookie){
     headers['Content-Type'] = proxyreq.headers['content-type'];
   }
   // console.log(headers);
+  var url = 'https://' + host + ':443' + proxyreq.url;
   options = {
-    host: host,
-    port: '443',
-    path: proxyreq.url,
+    url: url,
     method: proxyreq.method,
-    headers: headers
+    headers: headers,
+    proxy: proxyServer
   };
-  
   var body = '';
   proxyreq.on('data', function (data) {
       body += data;
@@ -72,29 +73,23 @@ function request(proxyreq, proxyres, cookie){
           proxyreq.connection.destroy();
   });
   proxyreq.on('end', function () {
-    // console.log('Original Request body: ' + body);    
-    var req = https.request(options, function(res) {
-      var body = '';
-      res.on('data', function(chunk) {
-        body += chunk;
-      });
-      res.on('end', function() {
-        // console.log('Proxy Response body: ' + body);      
-        proxyres.setHeader("Content-Type",  res.headers['content-type']);
-        if(res.headers['expires'] != '') { 
-          proxyres.setHeader("expires",  res.headers['expires']);
-        }
-        proxyres.statusCode = res.statusCode;
-        proxyres.end(body);
-      });
-    });
-    if(proxyreq.method == 'POST' || proxyreq.method == 'PUT'){      
-      req.write(body);
+    if(proxyreq.method == 'POST' || proxyreq.method == 'PUT'){
+      options.body = body;
     }
+    // request.debug = true;
+    // console.log('Original Request body: ' + body);    
+    var req = request(options, function (error, res, body) {
+      // console.log('Proxy Response body: ' + body);      
+      proxyres.setHeader("Content-Type",  res.headers['content-type']);
+      if(res.headers['expires'] != '') { 
+        proxyres.setHeader("expires",  res.headers['expires']);
+      }
+      proxyres.statusCode = res.statusCode;
+      proxyres.end(body);
+    });
     req.on('error', function(e) {
       console.log('problem with request: ' + e.message);
     });
-    req.end();
   });  
 }
 
@@ -115,6 +110,7 @@ var proxy = function (req, res) {
     samlAuthData.path = req.url;
     samlAuthData.username = authData.username;
     samlAuthData.password = authData.password;
+    samlAuthData.proxy = proxyServer;
     timestampTimeout = Date.now() - timeout;
 
     if(sessionCache[authData.hash] === undefined 
@@ -130,11 +126,11 @@ var proxy = function (req, res) {
               timestamp: Date.now()
           };
           // res.end(sessionCache[authData.hash]);
-          request(req, res, sessionCache[authData.hash].cookie);
+          proxyRequest(req, res, sessionCache[authData.hash].cookie);
         }
       });
     } else {
-      request(req, res, sessionCache[authData.hash].cookie);
+      proxyRequest(req, res, sessionCache[authData.hash].cookie);
     }
   }
 }
