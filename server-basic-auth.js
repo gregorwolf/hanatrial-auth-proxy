@@ -145,12 +145,12 @@ if(httpsServer) {
   https
     .createServer(httpsOptions, proxy)
     .listen(port, function () {
-      console.log('SAP HANA Cloud Tial Authentication Proxy for HANA XS Services ready: https://localhost:' + port);
+      console.log('SAP HANA Cloud Trial Authentication Proxy for HANA XS Services ready: https://localhost:' + port);
     });
 } else {
   http
     .createServer(proxy)
     .listen(port, function () {
-      console.log('SAP HANA Cloud Tial Authentication Proxy for HANA XS Services ready: http://localhost:' + port);
+      console.log('SAP HANA Cloud Trial Authentication Proxy for HANA XS Services ready: http://localhost:' + port);
     });  
 }
