@@ -43,4 +43,4 @@ TODO
 ----
 
 * Error handling when username / password is incorrect
-* Support for corporate proxies
+* Support for corporate proxies missing authentication support
