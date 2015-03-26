@@ -12,7 +12,7 @@ Setup
 -----
 
 * Install node.js from http://nodejs.org/
-* Install the node.js modules cheerio and querystring using npm install
+* Install the node.js modules cheerio, querystring and request using npm install
 * Clone this repository
 * Start the proxy server using 'node server-basic-auth.js'
 * Install the SAP Cloud Connector and configure to secure the connection from the HANA Cloud Platform to you local proxy server
