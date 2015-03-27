@@ -1,5 +1,5 @@
 var https = require('https');
-var hanaSaml = require('./lib/hana-saml');
+var hanaSaml = require('./../lib/hana-saml');
 
 // Grab the config file
 var config;

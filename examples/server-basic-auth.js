@@ -3,7 +3,7 @@ var http = require('http');
 var https = require('https');
 var fs = require('fs');
 var crypto = require('crypto');
-var hanaSaml = require('./lib/hana-saml');
+var hanaSaml = require('./../lib/hana-saml');
 var request = require('request');
 
 // Grab the config file
