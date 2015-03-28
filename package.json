@@ -1,0 +1,25 @@
+{
+  "name": "hanatrial-auth-proxy",
+  "version": "0.1.0",
+  "description": "SAP HANA Cloud Authentication Proxy for HANA XS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gregorwolf/hanatrial-auth-proxy.git"
+  },
+  "author": "Gregor Wolf (http://about.me/gregor.wolf)",
+  "contributors": [
+    "Maximilian Lenkeit <maximilian.lenkeit@gmail.com>"
+  ],
+  "bugs": {
+    "url": "https://github.com/gregorwolf/hanatrial-auth-proxy/issues"
+  },
+  "homepage": "https://github.com/gregorwolf/hanatrial-auth-proxy",
+  "dependencies": {
+    "cheerio": "^0.19.0",
+    "request": "^2.54.0"
+  }
+}
