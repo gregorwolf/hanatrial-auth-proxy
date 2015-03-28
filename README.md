@@ -1,25 +1,31 @@
-SAP HANA Cloud Trial Authentication Proxy for HANA XS Services
-==============================================================
+# SAP HANA Cloud Trial Authentication Proxy for HANA XS Services
 
 Due to the lack of SAML support for HTTP Destinations the only way to use HANA XS resources is through a proxy server. I try to implent it in node.js with inspirations from https://github.com/leftlogic/twitter-proxy.
 
-Concept
--------
+## Concept
 
 Provide a HTTP proxy that offers basic authentication to it's clients. The basic authentication information is taken and used to do a SAML authentication against the SAP ID Service. After a sucessful authentication the session cookies are cached in comination with the basic authentication information. The cache avoids a re-authentication for further requests.
 
-Setup
------
+## Setup
+
+To play around with, follow these steps:
 
 * Install node.js from http://nodejs.org/
-* Install the node.js modules cheerio, querystring and request using npm install
-* Clone this repository
-* Start the proxy server using 'node server-basic-auth.js'
+* Clone this repository and run `npm install` in the root folder
+* Start the proxy server using `node examples/server-basic-auth.js`
 * Install the SAP Cloud Connector and configure to secure the connection from the HANA Cloud Platform to you local proxy server
-* or you use the new HTTPS support and generate a key with 'openssl genrsa -out proxy-key.pem 2048', a certificate signing request (CSR) with 'openssl req -new -key proxy-key.pem -out proxy-csr.pem' and then let the sign by the free http://www.cacert.org/ until https://letsencrypt.org/ is available
+* or you use the new HTTPS support and generate a key with `openssl genrsa -out proxy-key.pem 2048`, a certificate signing request (CSR) with `openssl req -new -key proxy-key.pem -out proxy-csr.pem` and then let the sign by the free http://www.cacert.org/ until https://letsencrypt.org/ is available
 
-Status
-------
+To use this package in your node.js project, run either one of the following commands to install from Github:
+
+```shell
+# via https
+npm install git+https://git@github.com/gregorwolf/hanatrial-auth-proxy.git
+# via ssh
+npm install git+ssh://git@github.com/gregorwolf/hanatrial-auth-proxy.git
+```
+
+## Status
 
 * 2015-01-18: Added support for HTTPS and session timeouts
 * 2014-12-26: Support for HTTP GET, POST, PUT and DELETE. Tested with an SAPUI5 CRUD Applicaiton.
