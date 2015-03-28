@@ -25,8 +25,10 @@ npm install git+https://git@github.com/gregorwolf/hanatrial-auth-proxy.git
 npm install git+ssh://git@github.com/gregorwolf/hanatrial-auth-proxy.git
 ```
 
-## Status
+## Changelog
 
+* 2015-03-28: Maximilian Lenkeit transformed project in a proper Node.js module
+* 2015-03-16: Added support for HTTP proxies
 * 2015-01-18: Added support for HTTPS and session timeouts
 * 2014-12-26: Support for HTTP GET, POST, PUT and DELETE. Tested with an SAPUI5 CRUD Applicaiton.
 * 2014-12-23: There is a first working version!
