@@ -8,7 +8,7 @@ Provide a HTTP proxy that offers basic authentication to it's clients. The basic
 
 ## Setup
 
-To play around with, follow these steps:
+To play around with this feature, follow these steps:
 
 * Install node.js from http://nodejs.org/
 * Clone this repository and run `npm install` in the root folder
