@@ -27,7 +27,10 @@ authOptions['password'] = process.argv[3];
 authOptions['host'] = config.host || 's6hanaxs.hanatrial.ondemand.com';
 authOptions['path'] = '/p598692trial/helloworld/sample/services/samples.xsodata/Samples';
 
-var cookieHana = hanaSaml.authenticate(authOptions, function(cookie){
+var cookieHana = hanaSaml.authenticate(authOptions, function(error, cookie){
+  if (error) {
+    return console.error(error);
+  }
   // console.log('saml-client cookieHana: ' + cookie);
 
   headers = {
