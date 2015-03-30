@@ -116,7 +116,10 @@ var proxy = function (req, res) {
     if(sessionCache[authData.hash] === undefined 
        || sessionCache[authData.hash].timestamp <= timestampTimeout){
       console.log('Get new session cookie');
-      hanaSaml.authenticate(samlAuthData, function(cookie){
+      hanaSaml.authenticate(samlAuthData, function(error, cookie){
+        if (error) {
+          return console.error(error);
+        }
         // console.log(cookie);
         if(cookie === undefined){
           res.end('Authentication failed.');

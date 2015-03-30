@@ -1,6 +1,6 @@
 {
   "name": "hanatrial-auth-proxy",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "SAP HANA Cloud Authentication Proxy for HANA XS",
   "main": "index.js",
   "scripts": {
