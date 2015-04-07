@@ -79,12 +79,19 @@ function proxyRequest(proxyreq, proxyres, cookie){
     // request.debug = true;
     // console.log('Original Request body: ' + body);    
     var req = request(options, function (error, res, body) {
-      // console.log('Proxy Response body: ' + body);      
-      proxyres.setHeader("Content-Type",  res.headers['content-type']);
-      if(res.headers['expires'] != '') { 
-        proxyres.setHeader("expires",  res.headers['expires']);
+      if(res == undefined) {
+        console.log('Response is undefined');
+      } else {
+        proxyres.setHeader("Content-Type",  res.headers['content-type']);
+        if(res.headers['expires'] == undefined) {
+          console.log('Header expires is undefined');
+        } else {
+          if(res.headers['expires'] != '') { 
+            proxyres.setHeader("expires",  res.headers['expires']);
+          }
+        }
+        proxyres.statusCode = res.statusCode;
       }
-      proxyres.statusCode = res.statusCode;
       proxyres.end(body);
     });
     req.on('error', function(e) {
