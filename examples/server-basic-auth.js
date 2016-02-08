@@ -57,6 +57,9 @@ function proxyRequest(proxyreq, proxyres, cookie){
   if(proxyreq.headers['content-type'] != undefined) {
     headers['Content-Type'] = proxyreq.headers['content-type'];
   }
+  if(proxyreq.headers['accept-language'] != undefined) {
+    headers['Accept-Language'] = proxyreq.headers['accept-language'];
+  }
   // console.log(headers);
   var url = 'https://' + host + ':443' + proxyreq.url;
   options = {
