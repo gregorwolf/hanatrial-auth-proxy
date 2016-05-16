@@ -15,7 +15,7 @@ try {
   process.exit(1);
 }
 
-var port = config.port || 7891;
+var port = process.env.PORT || config.port || 7891;
 var host = config.host || 's6hanaxs.hanatrial.ondemand.com';
 var httpsServer = config.https || false;
 var proxyServer = config.proxy || '';
