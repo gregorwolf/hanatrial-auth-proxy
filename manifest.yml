@@ -1,0 +1,5 @@
+---
+applications:
+- name: hanatrial-auth-proxy
+  memory: 256M
+  command: node examples/server-basic-auth.js
